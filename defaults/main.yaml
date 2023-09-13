@@ -3,5 +3,5 @@ onepassword_accounts: []
 onepassword_config_file: "config"
 onepassword_config_dir: "{{ ansible_user_dir }}/.config/op"
 
-onepassword_pkg: "1password-cli"
+onepassword_package_name: "1password-cli"
 onepassword_bin: "op"
