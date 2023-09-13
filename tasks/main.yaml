@@ -1,0 +1,30 @@
+- name: Search for 1Password binary in PATH
+  ansible.builtin.shell:
+    cmd: "{{ onepassword_bin }} --version"
+  register: onepassword_bin_check
+  ignore_errors: true
+
+- name: Install 1Password
+  ansible.builtin.include_role:
+    name: darkwizard242.onepassword
+    apply:
+      become: true
+      become_user: root
+  vars:
+    onepassword_app_name: "{{ onepassword_package_name }}"
+  when: "onepassword_bin_check.rc == 127"
+
+- name: Ensure 1password config directory exists
+  ansible.builtin.file:
+    path: "{{ onepassword_config_dir }}"
+    state: directory
+    mode: "0700"
+    owner: "{{ ansible_user }}"
+
+- name: Configure 1password
+  ansible.builtin.copy:
+    content: |
+      {{ {"accounts": onepassword_accounts} | to_nice_json }}
+    dest: "{{ onepassword_config_dir }}/{{ onepassword_config_file }}"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
